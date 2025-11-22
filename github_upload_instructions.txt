@@ -1,0 +1,31 @@
+# Instrucciones para subir el proyecto a GitHub
+
+Abre una terminal en el directorio raíz de tu proyecto (C:\Users\rapso\Desktop\Proyecto DBA) y ejecuta los siguientes comandos:
+
+**1. Inicializa un repositorio de Git:**
+```bash
+git init
+```
+
+**2. Agrega todos los archivos al repositorio:**
+```bash
+git add .
+```
+
+**3. Crea tu primer commit (una "foto" del estado actual de tu proyecto):**
+```bash
+git commit -m "Initial project setup and configuration"
+```
+
+**4. Enlaza tu repositorio local con el repositorio remoto en GitHub:**
+```bash
+git remote add origin https://github.com/OmarAcatlan/Proyecto-DBA
+```
+
+**5. Sube tus archivos a GitHub:**
+Este comando subirá los archivos a la rama `main` de tu repositorio en GitHub.
+```bash
+git push -u origin main
+```
+(Nota: Dependiendo de tu configuración de Git, tu rama principal podría llamarse `master` en lugar de `main`. Si `git push -u origin main` da un error, prueba con `git push -u origin master`)
+

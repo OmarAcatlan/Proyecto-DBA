@@ -1,0 +1,44 @@
+import psycopg2
+
+# Datos de conexión.
+# Si ejecutas este script DENTRO del contenedor de Jupyter, usa db_host = "postgres".
+# Si ejecutas este script FUERA de los contenedores Docker (en tu máquina local), usa db_host = "localhost".
+db_host = "postgres" # Cambia a "localhost" si ejecutas en tu máquina local.
+db_name = "employees"
+db_user = "admin"
+db_password = "admin"
+db_port = "5432"
+
+conn = None
+cur = None
+
+try:
+    # Establecer conexión
+    conn = psycopg2.connect(
+        host=db_host,
+        database=db_name,
+        user=db_user,
+        password=db_password,
+        port=db_port
+    )
+    cur = conn.cursor()
+
+    # Ejecutar consulta
+    query = "SELECT emp_no, first_name, last_name FROM employees LIMIT 5;"
+    cur.execute(query)
+
+    rows = cur.fetchall()
+
+    print("Conexión exitosa y consulta ejecutada:")
+    for row in rows:
+        print(row)
+
+except Exception as e:
+    print(f"Error al conectar o ejecutar la consulta: {e}")
+
+finally:
+    if cur:
+        cur.close()
+    if conn:
+        conn.close()
+    print("Conexión cerrada.")

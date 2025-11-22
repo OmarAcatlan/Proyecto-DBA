@@ -1,0 +1,78 @@
+# Instrucciones para Configurar el Entorno de Desarrollo Local
+
+Este documento contiene todos los pasos necesarios para clonar y ejecutar el proyecto en un entorno local.
+
+## 1. Prerrequisitos
+
+Asegúrate de tener instalado el siguiente software en tu máquina:
+
+- **Git:** Para clonar el repositorio.
+- **Docker y Docker Compose:** Para ejecutar el entorno de desarrollo contenerizado. Asegúrate de que el servicio de Docker esté en ejecución.
+
+## 2. Clonar el Repositorio
+
+Abre una terminal y ejecuta el siguiente comando para clonar el repositorio desde GitHub:
+
+```bash
+git clone https://github.com/OmarAcatlan/Materia_Administracion_De_Base_De_Datos_1754.git
+```
+
+## 3. Iniciar el Entorno
+
+1.  Navega al directorio `development` del proyecto:
+
+    ```bash
+    cd Materia_Administracion_De_Base_De_Datos_1754/development
+    ```
+
+2.  Ejecuta el script `start.sh` para iniciar todos los servicios:
+
+    ```bash
+    bash start.sh
+    ```
+
+    **¿Qué hace este script?**
+    - Genera el archivo `init.sql` que contiene la base de datos `employees`.
+    - Levanta todos los servicios definidos en `docker-compose.yml` (PostgreSQL, Airflow, Grafana, etc.).
+
+    **Nota:** La primera vez que ejecutes este script, la carga de la base de datos puede tardar varios minutos. Puedes monitorear el progreso de la carga de la base de datos con el siguiente comando (reemplaza `<nombre_del_contenedor_postgres>` con el nombre real del contenedor):
+
+    ```bash
+    docker logs -f <nombre_del_contenedor_postgres>
+    ```
+
+## 4. Verificar la Configuración
+
+Una vez que el script haya terminado, puedes acceder a los diferentes servicios en tu navegador:
+
+- **Grafana:** http://localhost:3000
+- **Airflow:** http://localhost:8080
+- **Jupyter:** http://localhost:8888
+
+Para verificar que la base de datos se ha cargado correctamente, puedes conectarte al contenedor de PostgreSQL y realizar una consulta.
+
+1.  Busca el nombre del contenedor de PostgreSQL:
+
+    ```bash
+    docker ps --filter "name=postgres"
+    ```
+
+2.  Conéctate al contenedor (reemplaza `<nombre_del_contenedor_postgres>` y `<usuario_postgres>` con los valores correspondientes):
+
+    ```bash
+    docker exec -it <nombre_del_contenedor_postgres> psql -U <usuario_postgres> -d employees
+    ```
+
+3.  Una vez dentro de `psql`, puedes ejecutar una consulta para ver las 10 primeras filas de la tabla `employees`:
+
+    ```sql
+    SELECT * FROM employees LIMIT 10;
+    ```
+
+## 5. Detener el Entorno
+
+Para detener todos los servicios y eliminar los contenedores, ejecuta el siguiente comando desde el directorio `development`:
+
+```bash
+docker compose down -v
+```

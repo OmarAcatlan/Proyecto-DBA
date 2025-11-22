@@ -1,0 +1,17 @@
+# Environments
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Database
+init.sql
+
+# Jupyter
+.ipynb_checkpoints
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
