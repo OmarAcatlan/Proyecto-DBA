@@ -1,0 +1,116 @@
+=================================================
+ DOCUMENTACIÓN DEL PROYECTO: ENTORNO DE DATOS DBA
+=================================================
+
+VERSIÓN: 1.0
+FECHA: 23 de Noviembre de 2025
+
+---
+
+### 1. DESCRIPCIÓN GENERAL
+
+Este proyecto despliega un entorno de ingeniería y análisis de datos autocontenido utilizando Docker. Proporciona una solución completa para la ingesta, almacenamiento, orquestación de procesos y análisis interactivo de datos, utilizando la base de datos de ejemplo "employees".
+
+El objetivo es simular un entorno de Data Base Administration (DBA) y análisis de Recursos Humanos profesional.
+
+
+### 2. ARQUITECTURA DE SERVICIOS
+
+El entorno está compuesto por varios servicios containerizados que se comunican a través de una red interna de Docker:
+
+- **PostgreSQL (postgres:10)**:
+  - Rol: Base de datos relacional principal.
+  - Almacena los datos de los empleados y los metadatos de Airflow.
+  - Expuesto en el puerto `5432`.
+
+- **Apache Airflow (airflow:2.9.1)**:
+  - Rol: Orquestador de flujos de trabajo (ETL/ELT).
+  - Compuesto por un `webserver` (interfaz de usuario) y un `scheduler` (ejecutor de tareas).
+  - Ideal para programar y monitorear pipelines de datos (actualmente sin DAGs pre-cargados).
+  - Expuesto en el puerto `8080`.
+
+- **Jupyter Notebook (pyspark)**:
+  - Rol: Entorno de análisis de datos interactivo.
+  - Incluye `pyspark` para análisis de Big Data y librerías como `pandas` y `matplotlib` para análisis en memoria.
+  - Pre-configurado para conectarse a la base de datos PostgreSQL.
+  - Expuesto en el puerto `8888`.
+
+- **Prometheus**:
+  - Rol: Sistema de monitoreo y alertas.
+  - Recopila métricas de los servicios (requiere configuración de exportadores).
+  - Expuesto en el puerto `9090`.
+
+- **Grafana**:
+  - Rol: Plataforma de visualización y dashboards.
+  - Se conecta a Prometheus para crear dashboards de monitoreo del estado del sistema.
+  - Expuesto en el puerto `3000`.
+
+
+### 3. PRERREQUISITOS
+
+- **Docker Desktop**: Es indispensable tener Docker Desktop instalado y en ejecución en el sistema anfitrión para poder levantar el entorno.
+
+
+### 4. INSTALACIÓN Y ARRANQUE
+
+El proyecto está diseñado para ser configurado y arrancado con un único script.
+
+1.  **Navegación**: Abrir una terminal en el directorio `development`.
+2.  **Ejecución**: Ejecutar el siguiente comando:
+    ```bash
+    bash setup_and_start.sh
+    ```
+3.  **Proceso del Script**:
+    - Crea un archivo `.env` con todas las credenciales y configuraciones por defecto si no existe.
+    - Levanta todos los servicios definidos en `docker-compose.yml`.
+    - Espera a que la base de datos PostgreSQL se inicialice y cargue automáticamente todos los datos (~300,000 registros) desde los archivos en `init-db/`.
+    - Configura la base de datos interna de Airflow.
+    - Instala las dependencias necesarias en el contenedor de Jupyter.
+
+
+### 5. ACCESO A LOS SERVICIOS
+
+Una vez que el script `setup_and_start.sh` ha finalizado, los servicios son accesibles en las siguientes URLs:
+
+- **PostgreSQL**:
+  - **Host**: `localhost`
+  - **Puerto**: `5432`
+  - **Usuario**: `admin`
+  - **Contraseña**: `admin`
+  - **Base de Datos**: `employees`
+
+- **Airflow Web UI**:
+  - **URL**: http://localhost:8080
+  - **Usuario**: `airflow`
+  - **Contraseña**: `airflow`
+
+- **Jupyter Notebook**:
+  - **URL**: http://localhost:8888
+  - **Token**: `a_very_secret_token` (se pide al primer acceso)
+
+- **Grafana**:
+  - **URL**: http://localhost:3000
+  - **Usuario**: `admin`
+  - **Contraseña**: `admin` (por defecto en Grafana)
+
+- **Prometheus**:
+  - **URL**: http://localhost:9090
+
+
+### 6. ESTRUCTURA DE DIRECTORIOS
+
+- **/development**: Directorio raíz del proyecto Git.
+  - `docker-compose.yml`: Define todos los servicios, redes y volúmenes.
+  - `setup_and_start.sh`: Script principal para arrancar todo el entorno.
+  - `.gitignore`: Especifica los archivos que no deben ser rastreados por Git.
+  - `airflow/dags/`: Carpeta para alojar los DAGs (flujos de trabajo) de Airflow.
+  - `init-db/`: Contiene los scripts SQL y volcados (`.dump`) para la inicialización automática de la base de datos `employees`.
+  - `jupyter_notebook/`: Espacio de trabajo para los notebooks de Jupyter. Los archivos aquí son accesibles desde la interfaz web de Jupyter.
+  - `backups/`: Directorios designados para almacenar respaldos de la base de datos.
+  - `tablespaces/`: Directorio para tablespaces adicionales de PostgreSQL.
+
+
+### 7. GESTIÓN DE DATOS
+
+- **Carga Inicial**: La base de datos `employees` se crea y se llena automáticamente al levantar el contenedor de PostgreSQL por primera vez, gracias al mecanismo de `docker-entry-point-initdb.d`.
+- **Persistencia**: Los datos de PostgreSQL, los dags de Airflow y los notebooks de Jupyter son persistentes entre reinicios de los contenedores, ya que están montados en volúmenes locales. Para una limpieza total, se deben eliminar los volúmenes de Docker (`docker-compose down -v`).
