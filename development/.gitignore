@@ -15,3 +15,10 @@ init.sql
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
+
+# Jupyter runtime and cache files
+jupyter_notebook/.cache/
+jupyter_notebook/.ipython/
+jupyter_notebook/.jupyter/
+jupyter_notebook/.local/
+jupyter_notebook/.npm/
