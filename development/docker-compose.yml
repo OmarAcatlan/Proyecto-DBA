@@ -17,7 +17,7 @@ services:
       
     restart: always
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   airflow-init:
     image: apache/airflow:2.9.1
@@ -44,7 +44,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   airflow-webserver:
     image: apache/airflow:2.9.1
@@ -65,7 +65,7 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   airflow-scheduler:
     image: apache/airflow:2.9.1
@@ -83,7 +83,7 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   prometheus:
     image: prom/prometheus
@@ -93,7 +93,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   grafana:
     image: grafana/grafana
@@ -101,7 +101,7 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   pyspark:
     volumes:
@@ -114,8 +114,8 @@ services:
     environment:
       - JUPYTER_TOKEN=${JUPYTER_TOKEN}
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
 networks:
-  fes-acatlan:
+  proyecto-a-bd:
     driver: bridge

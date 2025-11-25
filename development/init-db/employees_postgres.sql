@@ -27,7 +27,8 @@ DROP TABLE IF EXISTS dept_emp,
                      titles,
                      salaries, 
                      employees, 
-                     departments CASCADE;
+                     departments,
+                     employee_payment_history CASCADE;
 
 CREATE TYPE gender_enum AS ENUM ('M','F');
 
@@ -38,7 +39,18 @@ CREATE TABLE employees (
     last_name   VARCHAR(16)     NOT NULL,
     gender      gender_enum     NOT NULL,    
     hire_date   DATE            NOT NULL,
+    end_date    DATE            NOT NULL DEFAULT '9999-12-31',
     PRIMARY KEY (emp_no)
+);
+CREATE TABLE employee_payment_history (
+    payment_id     INT         NOT NULL,
+    emp_no         INT         NOT NULL,
+    salary_amount  DECIMAL(10,2) NOT NULL,
+    payment_date   DATE        NOT NULL,
+    from_date      DATE        NOT NULL,
+    to_date        DATE        NOT NULL DEFAULT '9999-12-31',
+    PRIMARY KEY (payment_id),
+    FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
 );
 
 CREATE TABLE departments (
