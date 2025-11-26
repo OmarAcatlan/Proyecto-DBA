@@ -14,7 +14,7 @@ Asegúrate de tener instalado el siguiente software en tu máquina:
 Abre una terminal y ejecuta el siguiente comando para clonar el repositorio desde GitHub:
 
 ```bash
-git clone https://github.com/OmarAcatlan/Materia_Administracion_De_Base_De_Datos_1754.git
+git clone https://github.com/OmarAcatlan/Proyecto-DBA.git
 ```
 
 ## 3. Iniciar el Entorno
@@ -22,7 +22,7 @@ git clone https://github.com/OmarAcatlan/Materia_Administracion_De_Base_De_Datos
 1.  Navega al directorio `development` del proyecto:
 
     ```bash
-    cd Materia_Administracion_De_Base_De_Datos_1754/development
+    cd Proyecto-DBA.git/development
     ```
 
 2.  Ejecuta el script `start.sh` para iniciar todos los servicios:

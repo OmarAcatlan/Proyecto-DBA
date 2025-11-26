@@ -1,0 +1,116 @@
+# Instrucciones para unir la rama 'dev' en 'dev-flows'
+
+Sigue estos pasos en tu terminal para realizar la unión y resolver los conflictos.
+
+**Paso 1: Asegúrate de estar en la rama `dev-flows`**
+
+```bash
+git checkout dev-flows
+```
+
+**Paso 2: Une la rama `dev` en `dev-flows`**
+
+Este comando iniciará el proceso de unión. Es muy probable que Git te notifique de un conflicto en el archivo `docker-compose.yml`.
+
+```bash
+git merge dev
+```
+
+**Paso 3: Abre el archivo `development/docker-compose.yml` en tu editor de código**
+
+Verás unas marcas especiales en el archivo que indican el conflicto. Se verá algo así:
+
+```yaml
+<<<<<<< HEAD
+# Contenido de la rama dev-flows (la tuya)
+...
+networks:
+  proyecto-a-bd:
+    driver: bridge
+=======
+# Contenido de la rama dev (la que estás uniendo)
+...
+networks:
+  fes-acatlan:
+    driver: bridge
+>>>>>>> dev
+```
+
+**Paso 4: Resuelve el conflicto manualmente**
+
+Debes editar el archivo para que quede en el estado correcto. Basado en lo que acordamos, el archivo `docker-compose.yml` debería quedar de la siguiente manera:
+- Usar la red `proyecto-a-bd`.
+- Incluir el servicio `postgres-exporter` de la rama `dev`.
+
+El archivo final debería parecerse a esto (presta atención a la red y al nuevo servicio):
+
+```yaml
+services:
+  postgres:
+    # ... (sin cambios)
+    networks:
+      - proyecto-a-bd
+
+  # ... (todos los servicios de airflow sin cambios, pero usando la nueva red)
+  airflow-init:
+    # ...
+    networks:
+      - proyecto-a-bd
+  airflow-webserver:
+    # ...
+    networks:
+      - proyecto-a-bd
+  airflow-scheduler:
+    # ...
+    networks:
+      - proyecto-a-bd
+
+  # --- INICIO: Servicio añadido de la rama 'dev' ---
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+    networks:
+      - proyecto-a-bd
+  # --- FIN: Servicio añadido de la rama 'dev' ---
+
+  prometheus:
+    # ... (sin cambios)
+    networks:
+      - proyecto-a-bd
+  grafana:
+    # ... (sin cambios)
+    networks:
+      - proyecto-a-bd
+  pyspark:
+    # ... (sin cambios)
+    networks:
+      - proyecto-a-bd
+
+networks:
+  proyecto-a-bd:
+    driver: bridge
+```
+
+**Paso 5: Guarda el archivo `docker-compose.yml` y marca el conflicto como resuelto**
+
+Una vez que hayas editado y guardado el archivo, ejecuta el siguiente comando para decirle a Git que ya has resuelto el conflicto:
+
+```bash
+git add development/docker-compose.yml
+```
+
+**Paso 6: Completa la unión con un commit**
+
+Git te abrirá un editor de texto para que escribas un mensaje de commit. Normalmente, el mensaje por defecto es suficiente ("Merge branch 'dev' into dev-flows"). Simplemente guarda y cierra el editor.
+
+```bash
+git commit
+```
+
+¡Y eso es todo! Una vez que hayas hecho esto, avísame y yo continuaré con el resto de las correcciones.

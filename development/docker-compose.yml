@@ -17,7 +17,7 @@ services:
       
     restart: always
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   airflow-init:
     image: apache/airflow:2.9.1
@@ -30,21 +30,37 @@ services:
         airflow users create \
           --username ${AIRFLOW_USER} \
           --password ${AIRFLOW_PASSWORD} \
-          --firstname Castaneda \
-          --lastname Landa \
+          --firstname Proyecto \
+          --lastname RH \
           --role Admin \
-          --email 903564@pcpuma.acatlan.unam.mx
+          --email 903564@pcpuma.acatlan.unam.mx && \
+        airflow connections add '${AIRFLOW_CONN_ID}' \
+          --conn-type 'postgres' \
+          --conn-host '${POSTGRES_HOST}' \
+          --conn-login '${POSTGRES_USER}' \
+          --conn-password '${POSTGRES_PASSWORD}' \
+          --conn-port '${POSTGRES_PORT}' \
+          --conn-schema '${POSTGRES_DB}'
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_USER}:${AIRFLOW_PASSWORD}@postgres:5432/${POSTGRES_DB_AIRFLOW}
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_WEBSERVER_SECRET_KEY}
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+      - AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SENDER_EMAIL=${SENDER_EMAIL}
+      - SENDER_PASSWORD=${SENDER_PASSWORD}
+      - RECEIVER_EMAILS=${RECEIVER_EMAILS}
+      - AIRFLOW_CONN_ID=${AIRFLOW_CONN_ID}
     user: "0:0"
     volumes:
       - ./airflow/dags:/opt/airflow/dags
     depends_on:
       - postgres
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   airflow-webserver:
     image: apache/airflow:2.9.1
@@ -61,11 +77,20 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_USER}:${AIRFLOW_PASSWORD}@postgres:5432/${POSTGRES_DB_AIRFLOW}
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_WEBSERVER_SECRET_KEY}
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+      - AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SENDER_EMAIL=${SENDER_EMAIL}
+      - SENDER_PASSWORD=${SENDER_PASSWORD}
+      - RECEIVER_EMAILS=${RECEIVER_EMAILS}
+      - AIRFLOW_CONN_ID=${AIRFLOW_CONN_ID}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   airflow-scheduler:
     image: apache/airflow:2.9.1
@@ -79,11 +104,32 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_USER}:${AIRFLOW_PASSWORD}@postgres:5432/${POSTGRES_DB_AIRFLOW}
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_WEBSERVER_SECRET_KEY}
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+      - AIRFLOW__CORE__ENABLE_XCOM_PICKLING=True
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SENDER_EMAIL=${SENDER_EMAIL}
+      - SENDER_PASSWORD=${SENDER_PASSWORD}
+      - RECEIVER_EMAILS=${RECEIVER_EMAILS}
+      - AIRFLOW_CONN_ID=${AIRFLOW_CONN_ID}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+    networks:
+      - proyecto-a-bd
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter
@@ -105,7 +151,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   grafana:
     image: grafana/grafana
@@ -113,7 +159,7 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
   pyspark:
     volumes:
@@ -126,8 +172,8 @@ services:
     environment:
       - JUPYTER_TOKEN=${JUPYTER_TOKEN}
     networks:
-      - fes-acatlan
+      - proyecto-a-bd
 
 networks:
-  fes-acatlan:
+  proyecto-a-bd:
     driver: bridge

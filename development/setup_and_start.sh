@@ -10,6 +10,8 @@ echo "--- Iniciando la configuración del entorno ---"
 if [ ! -f ".env" ]; then
   echo "Creando archivo .env con valores por defecto..."
   cat > .env <<EOL
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
 POSTGRES_USER=admin
 POSTGRES_PASSWORD=admin
 POSTGRES_DB=employees
@@ -19,7 +21,13 @@ POSTGRES_DB_AIRFLOW=airflow
 AIRFLOW_WEBSERVER_SECRET_KEY=a_very_secret_key
 JUPYTER_TOKEN=a_very_secret_token
 PATH_LOCAL_USER=./jupyter_notebook
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+AIRFLOW_CONN_ID=postgresadb
 EOL
+else
+  echo "Cargando variables de entorno desde .env..."
+  set -a && source .env && set +a
 fi
 
 # --- 2. Iniciar servicios Docker ---
