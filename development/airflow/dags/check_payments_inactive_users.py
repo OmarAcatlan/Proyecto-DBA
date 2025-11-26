@@ -57,7 +57,7 @@ def check_payments_to_inactive_employees():
         send_alert_email(df, "ALERTA: Pagos a Empleados Inactivos")
         
         # También podrías registrar esto en una tabla de auditoría
-        log_audit_event(df)
+        #log_audit_event(df)
         
         print(f"ALERTA: Se encontraron {len(df)} pagos a empleados inactivos")
         return False  # Podría hacer fallar el DAG si es crítico
@@ -69,11 +69,11 @@ def send_alert_email(df, subject):
     """
     Envía alerta por correo electrónico
     """
-    smtp_server = smtp_server
-    smtp_port = smtp_port
-    sender_email = sender_email
-    sender_password = sender_password
-    receiver_emails = receiver_emails
+    #smtp_server = smtp_server
+    #smtp_port = smtp_port
+    #sender_email = sender_email
+    #sender_password = sender_password
+    #receiver_emails = receiver_emails
     
     msg = MIMEMultipart()
     msg['Subject'] = f"URGENTE: {subject}"
@@ -101,17 +101,25 @@ def send_alert_email(df, subject):
     """
     
     msg.attach(MIMEText(body, 'html'))
-    
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
+    try:
+        # Agregar timeout explícito
+        with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+            print(f"Email enviado exitosamente a {len(receiver_emails)} destinatarios")
+    except smtplib.SMTPException as e:
+        print(f"Error SMTP al enviar email: {str(e)}")
+        raise
+    except Exception as e:
+        print(f"Error inesperado al enviar email: {str(e)}")
+        raise
 
 def log_audit_event(df):
     """
     Registra el evento de auditoría en una tabla
     """
-    hook = PostgresHook(postgres_conn_id='your_postgres_conn')
+    hook = PostgresHook(postgres_conn_id=connection_id)
     
     for _, row in df.iterrows():
         insert_query = """

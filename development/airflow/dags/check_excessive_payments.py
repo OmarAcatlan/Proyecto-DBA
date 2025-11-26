@@ -43,7 +43,7 @@ def check_excessive_payments():
             AVG(s.salary) as avg_salary
         FROM employees e
         JOIN salaries s ON e.emp_no = s.emp_no
-        WHERE s.to_date = '9999-12-31'
+        WHERE e.end_date = '9999-12-31'
         GROUP BY e.emp_no
     ),
     total_monthly_payments AS (
@@ -55,7 +55,7 @@ def check_excessive_payments():
             FROM employee_payment_history eph
         JOIN employees e ON eph.emp_no = e.emp_no
         WHERE eph.payment_date >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
-            AND eph.payment_date < DATE_TRUNC('month', CURRENT_DATE)
+            OR eph.payment_date < DATE_TRUNC('month', CURRENT_DATE)
         GROUP BY eph.emp_no, e.first_name, e.last_name
     )
     SELECT 
@@ -75,8 +75,8 @@ def check_excessive_payments():
     
     if not df.empty:
         # Generar reporte Excel
-        report_path = f"/tmp/excessive_payments_report_{datetime.now().strftime('%Y%m%d')}.xlsx"
-        df.to_excel(report_path, index=False)
+        report_path = f"/tmp/excessive_payments_report_{datetime.now().strftime('%Y%m%d')}.csv"
+        df.to_csv(report_path, index=False)
         
         # Enviar email con el reporte
         send_email_with_report(df, report_path, "Reporte de Pagos Excesivos")
@@ -90,11 +90,11 @@ def send_email_with_report(df, report_path, subject):
     Envía el reporte por correo electrónico
     """
 
-    smtp_server = smtp_server
-    smtp_port = smtp_port
-    sender_email = sender_email
-    sender_password = sender_password
-    receiver_emails = receiver_emails
+    #smtp_server = smtp_server
+    #smtp_port = smtp_port
+    #sender_email = sender_email
+    #sender_password = sender_password
+    #receiver_emails = receiver_emails
     
     # Crear mensaje
     msg = MIMEMultipart()
@@ -127,10 +127,19 @@ def send_email_with_report(df, report_path, subject):
     msg.attach(part)
     
     # Enviar email
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
+    try:
+        # Agregar timeout explícito
+        with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+            print(f"Email enviado exitosamente a {len(receiver_emails)} destinatarios")
+    except smtplib.SMTPException as e:
+        print(f"Error SMTP al enviar email: {str(e)}")
+        raise
+    except Exception as e:
+        print(f"Error inesperado al enviar email: {str(e)}")
+        raise
 
 with DAG(
     'monthly_payment_excess_check',
