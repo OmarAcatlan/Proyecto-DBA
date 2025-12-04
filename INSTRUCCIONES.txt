@@ -25,10 +25,10 @@ git clone https://github.com/OmarAcatlan/Proyecto-DBA.git
     cd Proyecto-DBA.git/development
     ```
 
-2.  Ejecuta el script `start.sh` para iniciar todos los servicios:
+2.  Ejecuta el script `setup_and_start.sh` para iniciar todos los servicios:
 
     ```bash
-    bash start.sh
+    bash setup_and_start.sh
     ```
 
     **¿Qué hace este script?**

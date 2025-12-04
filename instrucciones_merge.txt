@@ -112,5 +112,3 @@ Git te abrirá un editor de texto para que escribas un mensaje de commit. Normal
 ```bash
 git commit
 ```
-
-¡Y eso es todo! Una vez que hayas hecho esto, avísame y yo continuaré con el resto de las correcciones.

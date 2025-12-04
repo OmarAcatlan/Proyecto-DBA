@@ -29,9 +29,8 @@ El entorno está compuesto por varios servicios containerizados que se comunican
   - Ideal para programar y monitorear pipelines de datos (actualmente sin DAGs pre-cargados).
   - Expuesto en el puerto `8080`.
 
-- **Jupyter Notebook (pyspark)**:
+- **Jupyter Notebook**:
   - Rol: Entorno de análisis de datos interactivo.
-  - Incluye `pyspark` para análisis de Big Data y librerías como `pandas` y `matplotlib` para análisis en memoria.
   - Pre-configurado para conectarse a la base de datos PostgreSQL.
   - Expuesto en el puerto `8888`.
 
