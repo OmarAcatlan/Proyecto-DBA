@@ -59,146 +59,10 @@
   "liveNow": false,
   "panels": [
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
       },
-      "id": 6,
-      "panels": [],
-      "title": "Resumen General",
-      "type": "row"
-    },
-    {
-      "datasource": "${DS_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 12,
-        "x": 0,
-        "y": 1
-      },
-      "id": 4,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.5.0",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum(pg_tablespace_sizes_tablespace_size_bytes{instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "Tamaño Total del Cluster",
-          "refId": "A"
-        }
-      ],
-      "title": "Tamaño Total de Tablespaces",
-      "type": "stat"
-    },
-    {
-      "datasource": "${DS_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 12,
-        "x": 12,
-        "y": 1
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.5.0",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "count(pg_tablespace_sizes_tablespace_size_bytes{instance=~\"$instance\"})",
-          "interval": "",
-          "legendFormat": "Tablespaces",
-          "refId": "A"
-        }
-      ],
-      "title": "Cantidad de Tablespaces",
-      "type": "stat"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 5
-      },
-      "id": 8,
-      "panels": [],
-      "title": "Detalle y Evolución",
-      "type": "row"
-    },
-    {
-      "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -211,15 +75,15 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -241,6 +105,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -249,362 +117,51 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 16,
+        "h": 9,
+        "w": 12,
         "x": 0,
-        "y": 6
+        "y": 0
       },
       "id": 2,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right",
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
           "exemplar": true,
-          "expr": "pg_tablespace_sizes_tablespace_size_bytes{instance=~\"$instance\"}",
+          "expr": "pg_tablespace_sizes_tablespace_size_bytes",
           "interval": "",
           "legendFormat": "{{tablespace_name}}",
           "refId": "A"
         }
       ],
-      "title": "Evolución de Tamaño (Histórico)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "${DS_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 1000000000
-              },
-              {
-                "color": "red",
-                "value": 10000000000
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 6
-      },
-      "id": 10,
-      "options": {
-        "displayMode": "gradient",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "pluginVersion": "7.5.0",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "pg_tablespace_sizes_tablespace_size_bytes{instance=~\"$instance\"}",
-          "interval": "",
-          "legendFormat": "{{tablespace_name}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Comparativa Actual (Top Consumers)",
-      "type": "bargauge"
-    },
-    {
-        "collapsed": false,
-        "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 14
-        },
-        "id": 12,
-        "panels": [],
-        "title": "Database Health",
-        "type": "row"
-    },
-    {
-        "datasource": "${DS_PROMETHEUS}",
-        "fieldConfig": {
-            "defaults": {
-                "color": {
-                    "mode": "palette-classic"
-                },
-                "custom": {},
-                "mappings": [],
-                "unit": "short"
-            },
-            "overrides": []
-        },
-        "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 15
-        },
-        "id": 14,
-        "options": {
-            "legend": {
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-            },
-            "tooltip": {
-                "mode": "single",
-                "sort": "none"
-            }
-        },
-        "targets": [
-            {
-                "expr": "sum(pg_stat_activity_count{datname=~\"$datname\"}) by (state)",
-                "legendFormat": "{{state}}",
-                "refId": "A"
-            }
-        ],
-        "title": "Active Connections",
-        "type": "pie"
-    },
-    {
-        "datasource": "${DS_PROMETHEUS}",
-        "fieldConfig": {
-            "defaults": {
-                "color": {
-                    "mode": "palette-classic"
-                },
-                "custom": {
-                  "drawStyle": "line",
-                  "lineInterpolation": "smooth",
-                  "lineWidth": 2,
-                  "fillOpacity": 15,
-                  "gradientMode": "opacity"
-                },
-                "mappings": [],
-                "unit": "tx/sec"
-            },
-            "overrides": []
-        },
-        "gridPos": {
-            "h": 8,
-            "w": 16,
-            "x": 8,
-            "y": 15
-        },
-        "id": 16,
-        "options": {
-            "legend": {
-                "displayMode": "table",
-                "placement": "right",
-                "showLegend": true
-            },
-            "tooltip": {
-                "mode": "multi",
-                "sort": "desc"
-            }
-        },
-        "targets": [
-            {
-                "expr": "rate(pg_stat_database_xact_commit{datname=~\"$datname\"}[5m])",
-                "legendFormat": "Commits",
-                "refId": "A"
-            },
-            {
-                "expr": "rate(pg_stat_database_xact_rollback{datname=~\"$datname\"}[5m])",
-                "legendFormat": "Rollbacks",
-                "refId": "B"
-            }
-        ],
-        "title": "Transactions per Second",
-        "type": "timeseries"
-    },
-    {
-        "datasource": "${DS_PROMETHEUS}",
-        "fieldConfig": {
-            "defaults": {
-                "color": {
-                    "mode": "continuous-GrYlRd"
-                },
-                "custom": {},
-                "mappings": [],
-                "unit": "percent",
-                "min": 0,
-                "max": 100
-            },
-            "overrides": []
-        },
-        "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 23
-        },
-        "id": 18,
-        "options": {
-            "orientation": "auto",
-            "showUnfilled": true,
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            }
-        },
-        "targets": [
-            {
-                "expr": "sum(rate(pg_stat_database_blks_hit{datname!~\"template.*\"}[5m])) / (sum(rate(pg_stat_database_blks_hit{datname!~\"template.*\"}[5m])) + sum(rate(pg_stat_database_blks_read{datname!~\"template.*\"}[5m]))) * 100",
-                "legendFormat": "Cache Hit Ratio",
-                "refId": "A"
-            }
-        ],
-        "title": "Cache Hit Ratio",
-        "type": "gauge"
-    },
-    {
-        "datasource": "${DS_PROMETHEUS}",
-        "fieldConfig": {
-            "defaults": {
-                "color": {
-                    "mode": "palette-classic"
-                },
-                "custom": {
-                    "drawStyle": "bar",
-                    "lineInterpolation": "linear",
-                    "barAlignment": 0,
-                    "lineWidth": 1,
-                    "fillOpacity": 80,
-                    "gradientMode": "none",
-                    "axisPlacement": "auto"
-                },
-                "mappings": [],
-                "unit": "short"
-            },
-            "overrides": []
-        },
-        "gridPos": {
-            "h": 8,
-            "w": 16,
-            "x": 8,
-            "y": 23
-        },
-        "id": 20,
-        "options": {
-            "legend": {
-                "displayMode": "table",
-                "placement": "right",
-                "showLegend": true
-            },
-            "tooltip": {
-                "mode": "multi",
-                "sort": "desc"
-            }
-        },
-        "targets": [
-            {
-                "expr": "sum(rate(pg_stat_user_tables_idx_scan{datname=~\"$datname\"}[5m])) by (relname)",
-                "legendFormat": "{{relname}} - Index Scans",
-                "refId": "A"
-            },
-            {
-                "expr": "sum(rate(pg_stat_user_tables_seq_scan{datname=~\"$datname\"}[5m])) by (relname)",
-                "legendFormat": "{{relname}} - Sequential Scans",
-                "refId": "B"
-            }
-        ],
-        "title": "Index vs Sequential Scans",
-        "type": "timeseries"
+      "title": "Tablespace Size",
+      "type": "barchart"
     }
   ],
-  "refresh": "1m",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": [
-    "PostgreSQL",
-    "DBA"
-  ],
+  "tags": [],
   "templating": {
-    "list": [
-      {
-        "allValue": null,
-        "datasource": "${DS_PROMETHEUS}",
-        "definition": "label_values(pg_up, instance)",
-        "description": null,
-        "error": null,
-        "hide": 0,
-        "includeAll": true,
-        "label": "Instancia",
-        "multi": false,
-        "name": "instance",
-        "query": "label_values(pg_up, instance)",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-          "allValue": null,
-          "current": {},
-          "datasource": "${DS_PROMETHEUS}",
-          "definition": "label_values(pg_database_size_bytes, datname)",
-          "hide": 0,
-          "includeAll": true,
-          "label": "Database",
-          "multi": true,
-          "name": "datname",
-          "options": [],
-          "query": "label_values(pg_database_size_bytes, datname)",
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "sort": 0,
-          "type": "query"
-      }
-    ]
+    "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "PostgreSQL Tablespaces - Pro Dashboard",
-  "uid": "pg_tablespaces_pro",
-  "version": 2
+  "title": "PostgreSQL Tablespaces",
+  "uid": "LcyiXk6Vk",
+  "version": 1,
+  "weekStart": ""
 }
