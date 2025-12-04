@@ -1,0 +1,13 @@
+pg_tablespace_sizes:
+  query: |
+    SELECT
+      spcname AS tablespace_name,
+      pg_tablespace_size(spcname) AS tablespace_size_bytes
+    FROM pg_tablespace;
+  metrics:
+    - tablespace_name:
+        usage: "LABEL"
+        description: "Name of the tablespace"
+    - tablespace_size_bytes:
+        usage: "GAUGE"
+        description: "Disk space used by the tablespace in bytes"

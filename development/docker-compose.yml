@@ -124,8 +124,11 @@ services:
     container_name: postgres_exporter
     environment:
       DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
     ports:
       - "9187:9187"
+    volumes:
+      - ./queries.yaml:/etc/postgres_exporter/queries.yaml
     depends_on:
       - postgres
     networks:
