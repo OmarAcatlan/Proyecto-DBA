@@ -11,7 +11,7 @@ El proyecto consiste en una plataforma de análisis de datos contenerizada que i
 - **Contenerización:** Docker, Docker Compose
 - **Base de Datos:** PostgreSQL 10
 - **Orquestación de Flujos de Trabajo (ETL):** Apache Airflow 2.9.1
-- **Análisis de Datos y Notebooks:** Jupyter Notebook, PySpark, Pandas, Matplotlib, Sympy
+- **Análisis de Datos y Notebooks:** Jupyter Notebook, Pandas, Matplotlib, Sympy
 - **Monitoreo:** Prometheus
 - **Visualización de Métricas:** Grafana
 - **Automatización (Propuesta):** Script de Bash
