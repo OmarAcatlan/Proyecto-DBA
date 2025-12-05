@@ -1,0 +1,161 @@
+-- ============================================
+-- ROLES Y PERMISOS PARA SISTEMA DE RECURSOS HUMANOS
+-- ============================================
+
+-- 1. CREACIÓN DE ROLES
+CREATE ROLE admin_role;
+CREATE ROLE hr_user_role;
+CREATE ROLE basic_user_role;
+
+-- 2. PERMISOS PARA ADMIN_ROLE (ACCIÓN TOTAL)
+GRANT ALL PRIVILEGES ON DATABASE employee_db TO admin_role;
+
+-- Permisos en todas las tablas
+GRANT ALL PRIVILEGES ON TABLE employees TO admin_role;
+GRANT ALL PRIVILEGES ON TABLE employee_payment_history TO admin_role;
+GRANT ALL PRIVILEGES ON TABLE departments TO admin_role;
+GRANT ALL PRIVILEGES ON TABLE dept_manager TO admin_role;
+GRANT ALL PRIVILEGES ON TABLE dept_emp TO admin_role;
+GRANT ALL PRIVILEGES ON TABLE titles TO admin_role;
+GRANT ALL PRIVILEGES ON TABLE salaries TO admin_role;
+
+-- Permisos en secuencias (si existen)
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin_role;
+
+-- 3. PERMISOS PARA HR_USER_ROLE (GESTIÓN OPERATIVA)
+-- Acceso completo a lectura
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO hr_user_role;
+
+-- Permisos específicos de escritura/modificación:
+-- Empleados: Puede insertar nuevos, actualizar información básica
+GRANT INSERT, UPDATE ON TABLE employees TO hr_user_role;
+GRANT USAGE, SELECT ON SEQUENCE employees_emp_no_seq TO hr_user_role;
+
+-- Historial de pagos: Puede registrar pagos
+GRANT INSERT, UPDATE ON TABLE employee_payment_history TO hr_user_role;
+GRANT USAGE, SELECT ON SEQUENCE employee_payment_history_payment_id_seq TO hr_user_role;
+
+-- Asignación departamental: Puede gestionar
+GRANT INSERT, UPDATE ON TABLE dept_emp TO hr_user_role;
+
+-- Títulos y salarios: Puede actualizar
+GRANT INSERT, UPDATE ON TABLE titles TO hr_user_role;
+GRANT INSERT, UPDATE ON TABLE salaries TO hr_user_role;
+
+-- Departamentos: Solo lectura (no puede crear/eliminar departamentos)
+GRANT SELECT ON TABLE departments TO hr_user_role;
+
+-- Gestores de departamento: Solo lectura (cambios requieren aprobación)
+GRANT SELECT ON TABLE dept_manager TO hr_user_role;
+
+-- NO puede eliminar registros (solo soft-delete o cambios de estado)
+-- Para implementar esto, necesitarías triggers o validaciones en la aplicación
+
+-- 4. PERMISOS PARA BASIC_USER_ROLE (CONSULTA LIMITADA)
+-- Solo lectura en datos básicos de empleados
+GRANT SELECT ON TABLE employees TO basic_user_role;
+
+-- Vista limitada de departamentos (sin información sensible)
+CREATE VIEW vw_departments_public AS
+SELECT dept_no, dept_name FROM departments;
+GRANT SELECT ON vw_departments_public TO basic_user_role;
+
+-- Vista de estructura organizativa básica
+CREATE VIEW vw_org_structure AS
+SELECT 
+    e.emp_no,
+    e.first_name,
+    e.last_name,
+    d.dept_name,
+    t.title
+FROM employees e
+LEFT JOIN dept_emp de ON e.emp_no = de.emp_no 
+    AND de.to_date = '9999-12-31'
+LEFT JOIN departments d ON de.dept_no = d.dept_no
+LEFT JOIN titles t ON e.emp_no = t.emp_no 
+    AND t.to_date = '9999-12-31'
+WHERE e.end_date = '9999-12-31';
+GRANT SELECT ON vw_org_structure TO basic_user_role;
+
+-- Vista de información de contacto básica
+CREATE VIEW vw_employee_directory AS
+SELECT 
+    emp_no,
+    first_name,
+    last_name,
+    dept_name,
+    title
+FROM vw_org_structure;
+GRANT SELECT ON vw_employee_directory TO basic_user_role;
+
+-- 5. PERMISOS ESPECÍFICOS ADICIONALES
+-- HR User puede ver información salarial para procesos internos
+CREATE VIEW vw_hr_salary_info AS
+SELECT 
+    e.emp_no,
+    e.first_name,
+    e.last_name,
+    s.salary,
+    s.from_date,
+    s.to_date,
+    d.dept_name
+FROM employees e
+JOIN salaries s ON e.emp_no = s.emp_no
+JOIN dept_emp de ON e.emp_no = de.emp_no 
+    AND de.to_date = '9999-12-31'
+JOIN departments d ON de.dept_no = d.dept_no
+WHERE e.end_date = '9999-12-31';
+GRANT SELECT ON vw_hr_salary_info TO hr_user_role;
+
+-- 6. CREACIÓN DE USUARIOS EJEMPLO
+-- CREATE USER admin_user WITH PASSWORD 'secure_password';
+-- GRANT admin_role TO admin_user;
+
+-- CREATE USER hr_martha WITH PASSWORD 'hr_password';
+-- GRANT hr_user_role TO hr_martha;
+
+-- CREATE USER juan_empleado WITH PASSWORD 'user_password';
+-- GRANT basic_user_role TO juan_empleado;
+
+-- 7. POLÍTICAS DE SEGURIDAD ADICIONALES (PostgreSQL RLS)
+-- Si usas PostgreSQL, puedes agregar Row Level Security:
+
+-- ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
+-- 
+-- -- Política para admin: ve todo
+-- CREATE POLICY admin_all ON employees FOR ALL TO admin_role USING (true);
+-- 
+-- -- Política para HR: ve todos los empleados activos
+-- CREATE POLICY hr_view ON employees FOR SELECT TO hr_user_role 
+--     USING (end_date = '9999-12-31');
+-- 
+-- -- Política para usuarios básicos: solo información pública
+-- CREATE POLICY basic_view ON employees FOR SELECT TO basic_user_role 
+--     USING (end_date = '9999-12-31');
+
+-- 8. REVOCAR PERMISOS POR DEFECTO
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM PUBLIC;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM PUBLIC;
+
+-- 9. FUNCIÓN PARA CAMBIAR ROLES (EJEMPLO)
+CREATE OR REPLACE FUNCTION change_user_role(
+    p_username VARCHAR,
+    p_new_role VARCHAR
+) RETURNS VOID AS $$
+BEGIN
+    EXECUTE format('REVOKE admin_role, hr_user_role, basic_user_role FROM %I', p_username);
+    EXECUTE format('GRANT %I TO %I', p_new_role, p_username);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 10. AUDITORÍA DE ACCESOS (OPCIONAL)
+CREATE TABLE access_audit (
+    audit_id SERIAL PRIMARY KEY,
+    username VARCHAR(50),
+    role_name VARCHAR(50),
+    action_taken VARCHAR(100),
+    table_affected VARCHAR(50),
+    access_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+GRANT INSERT ON access_audit TO admin_role, hr_user_role;

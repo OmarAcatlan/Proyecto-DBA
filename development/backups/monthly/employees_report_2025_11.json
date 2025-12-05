@@ -1,0 +1,14 @@
+{
+  "month": "2025-11",
+  "generation_date": "2025-12-05T22:16:14.713016",
+  "database": "employees",
+  "statistics": {
+    "total_employees": "300024",
+    "total_departments": "9",
+    "db_size": "281 MB"
+  },
+  "backup_info": {
+    "filename": "employees_db_2025_11.dump",
+    "path": "/var/lib/postgresql/backups/monthly/employees_db_2025_11.dump"
+  }
+}

@@ -20,6 +20,7 @@ cat \
     ./init-db/load_salaries1.dump \
     ./init-db/load_salaries2.dump \
     ./init-db/load_salaries3.dump \
+    ./init-db/create_roles.dump \
     ./init-db/load_employee_payment_history.dump > ./init-db/init.sql
 
 echo "Deteniendo y limpiando el entorno anterior..."
