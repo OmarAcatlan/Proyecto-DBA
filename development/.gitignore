@@ -22,3 +22,7 @@ jupyter_notebook/.ipython/
 jupyter_notebook/.jupyter/
 jupyter_notebook/.local/
 jupyter_notebook/.npm/
+
+
+backups/daily/*
+backups/monthly/*
