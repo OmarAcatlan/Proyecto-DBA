@@ -56,10 +56,13 @@ sleep 30 # Dar tiempo a que airflow-init termine
 # Reiniciar los servicios de Airflow para que se conecten a la BD inicializada
 echo "--- Reiniciando los servicios de Airflow ---"
 docker restart development-airflow-webserver-1 development-airflow-scheduler-1
+# Proporciona permisos de ejecucion en el host para crear backups
+sudo chmod 666 /var/run/docker.sock
 
 # --- 5. Instalar dependencias en Jupyter ---
-echo "--- Instalando 'psycopg2-binary' en el contenedor de Jupyter ---"
-docker exec development-pyspark-1 pip install psycopg2-binary
+#REMOVIDO COMO YA NO SE USARA PYSPARK
+#echo "--- Instalando 'psycopg2-binary' en el contenedor de Jupyter ---"
+#docker exec development-pyspark-1 pip install psycopg2-binary
 
 # --- 6. Finalización ---
 echo "--- ¡El entorno se ha configurado y iniciado correctamente! ---"

@@ -10,8 +10,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./tablespaces:/var/lib/postgresql/tablespaces/ts1
-      - ./backups/completo:/var/lib/postgresql/backups/completo
-      - ./backups/diferencial:/var/lib/postgresql/backups/diferencial
+      - ./backups/monthly:/var/lib/postgresql/backups/monthly
+      - ./backups/daily:/var/lib/postgresql/backups/daily
       - ./backups/incremental/wal:/var/lib/postgresql/backups/incremental/wal
       - ./init-db:/docker-entrypoint-initdb.d
       
