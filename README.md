@@ -23,7 +23,7 @@ El sistema sigue una arquitectura de microservicios, donde cada componente se ej
 1.  **Base de Datos (`postgres`):** Almacenará la base de datos `employees` para el análisis y la metadata de Airflow.
 2.  **Carga de Datos (Nuevo Plan):** Al iniciar, el contenedor de `postgres` ejecutará automáticamente los scripts `.sql` del repositorio `test_db` para crear el esquema y poblar la base de datos `employees`.
 3.  **Orquestación (`airflow-*`):** Permitirá definir, programar y monitorear flujos de trabajo (DAGs) para el procesamiento y análisis de los datos de `employees`.
-4.  **Entorno de Análisis (`pyspark`):** Proporcionará un entorno interactivo con Jupyter y PySpark para analizar el gran volumen de datos.
+4.  **Entorno de Análisis:** Proporcionará un entorno interactivo con Jupyter para analizar el volumen de datos.
 5.  **Monitoreo y Visualización (`prometheus`, `grafana`):** Capturarán y mostrarán métricas de rendimiento de la base de datos y los servicios.
 
 ## 4. Propuesta de Nueva Implementación
