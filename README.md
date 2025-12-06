@@ -27,7 +27,7 @@ El sistema sigue una arquitectura de microservicios, donde cada componente se ej
 5.  **Monitoreo y Visualización (`prometheus`, `grafana`):** Capturarán y mostrarán métricas de rendimiento de la base de datos y los servicios.
 
 ## 4. Propuesta de Nueva Implementación
-
+### Ejecutado simplemente bash ./setup_and_start.sh
 ### Automatización con Bash
 
 Un script de Bash (ej. `start.sh`) orquestará el ciclo de vida del entorno, reemplazando la lógica actual de Terraform.
